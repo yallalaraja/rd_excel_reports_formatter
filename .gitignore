@@ -1,0 +1,74 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Environment variables
+.env
+.env.*
+
+# Flask
+instance/
+.webassets-cache/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Logs
+*.log
+
+# SQLite database
+*.sqlite3
+*.db
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Pytest
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Build files
+build/
+dist/
+*.egg-info/
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Mac/Linux/Windows system files
+.DS_Store
+Thumbs.db
+
+# mypy
+.mypy_cache/
+
+# Ruff / Black
+.ruff_cache/
+
+# Node modules (if frontend exists)
+node_modules/
+
+# Uploaded files
+uploads/
+media/
+
+# Streamlit cache
+.streamlit/cache/
+
+# Temporary files
+tmp/
+temp/
