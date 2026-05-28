@@ -1,7 +1,5 @@
-RD Report Formatter UI - Print Preview + Scroll Fixed
-
 Steps:
-1. Extract this ZIP.
+1. Clone the repository
 2. Open PowerShell inside the extracted folder.
 3. Run:
    pip install -r requirements.txt
