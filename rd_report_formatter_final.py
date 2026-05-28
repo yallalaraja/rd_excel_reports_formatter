@@ -48,7 +48,6 @@ WANTED_HEADERS = [
     "RD Denomination",
     "RD Total Deposit Amount",
     "No of Installments",
-    "Rebate",
     "Default fee",
 ]
 
@@ -299,8 +298,8 @@ def build_formatted_report(wb, ws, details: Dict[str, str], data_rows: List[Dict
     clear_sheet_keep_images(ws)
 
     row_count = len(data_rows)
-    body_font_size = 14 if row_count <= 15 else 12 if row_count <= 35 else 11
-    header_font_size = 14 if row_count <= 35 else 12
+    body_font_size = 16 if row_count <= 15 else 12 if row_count <= 35 else 11
+    header_font_size = 16 if row_count <= 35 else 12
 
     thin = Side(style="thin", color="000000")
     medium = Side(style="medium", color="000000")
@@ -317,12 +316,20 @@ def build_formatted_report(wb, ws, details: Dict[str, str], data_rows: List[Dict
 
     # Top fixed section.
     merge_ranges = [
-        "A5:K5", "A6:K6",
-        "A7:F7", "G7:K7", "A8:F8", "G8:K8", "A9:F9", "G9:K9",
-        "A10:F10", "G10:K10", "A11:F11", "G11:K11", "A12:F12", "G12:K12",
-        "A13:K13", "A14:F14", "G14:K14", "A15:F15", "G15:K15",
-        "D17:F17", "G17:H17",
+            "A5:J5", "A6:J6",
+            "A7:F7", "G7:J7",
+            "A8:F8", "G8:J8",
+            "A9:F9", "G9:J9",
+            "A10:F10", "G10:J10",
+            "A11:F11", "G11:J11",
+            "A12:F12", "G12:J12",
+            "A13:J13",
+            "A14:F14", "G14:J14",
+            "A15:F15", "G15:J15",
+            "D17:F17",
+            "G17:H17",
     ]
+
     for rng in merge_ranges:
         ws.merge_cells(rng)
 
@@ -352,8 +359,7 @@ def build_formatted_report(wb, ws, details: Dict[str, str], data_rows: List[Dict
         "D17": "RD Denomination",
         "G17": "RD Total Deposit\nAmount",
         "I17": "No of\nInstallments",
-        "J17": "Rebate",
-        "K17": "Default\nfee",
+        "J17": "Default\nfee",
     }
     for cell, text in headers.items():
         ws[cell] = text
@@ -369,8 +375,7 @@ def build_formatted_report(wb, ws, details: Dict[str, str], data_rows: List[Dict
         ws.cell(i, 4).value = item["denom"]
         ws.cell(i, 7).value = item["total"]
         ws.cell(i, 9).value = item["installments"]
-        ws.cell(i, 10).value = item["rebate"] if item["rebate"] not in (None, "") else 0
-        ws.cell(i, 11).value = item["default_fee"] if item["default_fee"] not in (None, "") else 0
+        ws.cell(i, 10).value = item["default_fee"] if item["default_fee"] not in (None, "") else 0
 
     last_row = start_row + row_count - 1
     if row_count:
@@ -390,8 +395,8 @@ def build_formatted_report(wb, ws, details: Dict[str, str], data_rows: List[Dict
 
     ws.merge_cells(start_row=total_header_row, start_column=1, end_row=total_header_row, end_column=2)
     ws.merge_cells(start_row=total_value_row, start_column=1, end_row=total_value_row, end_column=2)
-    ws.merge_cells(start_row=total_header_row, start_column=6, end_row=total_header_row, end_column=11)
-    ws.merge_cells(start_row=total_value_row, start_column=6, end_row=total_value_row, end_column=11)
+    ws.merge_cells(start_row=total_header_row, start_column=6, end_row=total_header_row, end_column=10)
+    ws.merge_cells(start_row=total_value_row, start_column=6, end_row=total_value_row, end_column=10)
     ws.cell(total_header_row, 1).value = "List Ref No"
     ws.cell(total_value_row, 1).value = details.get("list_ref", "")
     ws.cell(total_header_row, 6).value = "Total Deposit Amount"
@@ -410,22 +415,28 @@ def build_formatted_report(wb, ws, details: Dict[str, str], data_rows: List[Dict
     # Clean borders for top section. Style merged ranges by range to avoid broken/partial
     # border lines in Excel Print Preview.
     top_style_ranges = [
-        "A5:K5", "A6:K6",
-        "A7:F7", "G7:K7", "A8:F8", "G8:K8", "A9:F9", "G9:K9",
-        "A10:F10", "G10:K10", "A11:F11", "G11:K11", "A12:F12", "G12:K12",
-        "A13:K13", "A14:F14", "G14:K14", "A15:F15", "G15:K15",
+        "A5:J5", "A6:J6",
+        "A7:F7", "G7:J7",
+        "A8:F8", "G8:J8",
+        "A9:F9", "G9:J9",
+        "A10:F10", "G10:J10",
+        "A11:F11", "G11:J11",
+        "A12:F12", "G12:J12",
+        "A13:J13",
+        "A14:F14", "G14:J14",
+        "A15:F15", "G15:J15",
     ]
     for rng in top_style_ranges:
         apply_range_style(ws, rng, border=border_all, fill=white_fill, font=font_body, alignment=align_center)
         apply_outline_border(ws, rng, thin)
 
     ws["A5"].font = font_title
-    for rng in ["A6:K6", "A13:K13"]:
+    for rng in ["A6:K6", "A13:J13"]:
         apply_range_style(ws, rng, fill=header_fill, font=font_header, alignment=align_center)
         apply_outline_border(ws, rng, thin)
 
     # Table header borders/fill.
-    for row in ws.iter_rows(min_row=17, max_row=17, min_col=1, max_col=11):
+    for row in ws.iter_rows(min_row=17, max_row=17, min_col=1, max_col=10):
         for cell in row:
             if not isinstance(cell, MergedCell):
                 cell.fill = header_fill
@@ -435,7 +446,7 @@ def build_formatted_report(wb, ws, details: Dict[str, str], data_rows: List[Dict
 
     # Table data formatting.
     for r in range(start_row, last_row + 1):
-        for c in range(1, 12):
+        for c in range(1, 11):
             cell = ws.cell(r, c)
             if not isinstance(cell, MergedCell):
                 cell.border = border_all
@@ -448,13 +459,13 @@ def build_formatted_report(wb, ws, details: Dict[str, str], data_rows: List[Dict
     for rng in [
         f"A{total_header_row}:B{total_header_row}",
         f"A{total_value_row}:B{total_value_row}",
-        f"F{total_header_row}:K{total_header_row}",
-        f"F{total_value_row}:K{total_value_row}",
+        f"F{total_header_row}:J{total_header_row}",
+        f"F{total_value_row}:J{total_value_row}",
     ]:
         apply_range_style(ws, rng, border=border_all, fill=white_fill, font=font_body, alignment=align_center)
         apply_outline_border(ws, rng, thin)
 
-    for rng in [f"A{total_header_row}:B{total_header_row}", f"F{total_header_row}:K{total_header_row}"]:
+    for rng in [f"A{total_header_row}:B{total_header_row}", f"F{total_header_row}:J{total_header_row}"]:
         apply_range_style(ws, rng, fill=header_fill, font=font_header, alignment=align_center)
         apply_outline_border(ws, rng, thin)
 
@@ -464,8 +475,8 @@ def build_formatted_report(wb, ws, details: Dict[str, str], data_rows: List[Dict
 
     # Widths: start from A, no empty A-E columns.
     widths = {
-        "A": 7, "B": 18, "C": 39, "D": 12, "E": 8, "F": 8,
-        "G": 14, "H": 8, "I": 13, "J": 9, "K": 9,
+        "A": 7, "B": 20, "C": 50, "D": 12, "E": 8, "F": 8,
+        "G": 18, "H": 10, "I": 17, "J": 12
     }
     for col, width in widths.items():
         ws.column_dimensions[col].width = width
@@ -497,7 +508,7 @@ def build_formatted_report(wb, ws, details: Dict[str, str], data_rows: List[Dict
     ws.page_setup.fitToHeight = 1 if row_count <= 20 else 0
     ws.page_margins = PageMargins(left=0.10, right=0.10, top=0.15, bottom=0.15, header=0.03, footer=0.03)
     ws.print_options.horizontalCentered = True
-    ws.print_area = f"A1:K{used_max_row}"
+    ws.print_area = f"A1:J{used_max_row}"
     ws.row_breaks.brk = []
     ws.col_breaks.brk = []
     ws.freeze_panes = None
